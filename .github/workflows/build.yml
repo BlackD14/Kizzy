@@ -1,4 +1,4 @@
-name: Test Build
+name: Build
 
 on:
   push:
@@ -34,10 +34,10 @@ jobs:
         run: chmod +x gradlew
 
       - name: Assemble Debug
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleRelease
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: apk-debug
-          path: app/build/outputs/apk/debug/**.apk
+          name: apk-release
+          path: app/build/outputs/apk/release/**.apk
