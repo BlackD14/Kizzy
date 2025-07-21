@@ -36,20 +36,24 @@ jobs:
       - name: Assemble Release
         run: ./gradlew assembleRelease
 
+      - name: Sign app APK
+        uses: r0adkll/sign-android-release@v1
+        id: sign_app
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: apk-release
-          path: app/build/outputs/apk/release/**.apk
+          path: ${{steps.sign_app.outputs.signedReleaseFile}}
 
       - name: Prepare APK for release
-        run: |
-          APK_PATH=$(find app/build/outputs/apk/release -name "*.apk" | head -n 1)
-          if [ -z "$APK_PATH" ]; then
-            echo "No APK found in app/build/outputs/apk/release/"
-            exit 1
-          fi
-          mv "$APK_PATH" Kizzy-v${{ github.run_number }}.apk
+        run: mv ${{steps.sign_app.outputs.signedReleaseFile}} Kizzy-v${{ github.run_number }}.apk
 
       - name: Create Release
         uses: softprops/action-gh-release@v1 # Prefer softprops/action-gh-release for simplicity with files
