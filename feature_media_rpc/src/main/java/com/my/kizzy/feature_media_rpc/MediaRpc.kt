@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.filled.PlaylistAddCircle
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -65,6 +66,7 @@ import com.my.kizzy.preference.Prefs.MEDIA_RPC_ARTIST_NAME
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_ENABLE_TIMESTAMPS
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_HIDE_ON_PAUSE
 import com.my.kizzy.preference.Prefs.MEDIA_RPC_SHOW_PLAYBACK_STATE
+import com.my.kizzy.preference.Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE
 import com.my.kizzy.resources.R
 import com.my.kizzy.ui.components.AppsItem
 import com.my.kizzy.ui.components.BackButton
@@ -79,6 +81,7 @@ import com.my.kizzy.ui.components.preference.PreferencesHint
 fun MediaRPC(
     onBackPressed: () -> Unit,
     state: MediaAppsState,
+    hasNotificationAccess: Boolean,
     updateMediaAppEnabled: (String) -> Unit,
 ) {
     val context = LocalContext.current
@@ -89,7 +92,7 @@ fun MediaRPC(
     var isTimestampsEnabled by remember { mutableStateOf(Prefs[MEDIA_RPC_ENABLE_TIMESTAMPS, false]) }
     var hideOnPause by remember { mutableStateOf(Prefs[MEDIA_RPC_HIDE_ON_PAUSE, false]) }
     var isShowPlaybackState by remember { mutableStateOf(Prefs[MEDIA_RPC_SHOW_PLAYBACK_STATE, false]) }
-    var hasNotificationAccess by remember { mutableStateOf(context.hasNotificationAccess()) }
+    var showSongAsTitle by remember { mutableStateOf(Prefs[Prefs.MEDIA_RPC_SHOW_SONG_AS_TITLE, false]) }
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState(),
@@ -141,9 +144,8 @@ fun MediaRPC(
                     description = stringResource(id = R.string.request_for_notification_access),
                     icon = Icons.Default.Warning,
                 ) {
-                    when (context.hasNotificationAccess()) {
-                        true -> hasNotificationAccess = true
-                        false -> context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+                    if (!hasNotificationAccess) {
+                        context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
                     }
                 }
             }
@@ -231,6 +233,16 @@ fun MediaRPC(
                     ) {
                         hideOnPause = !hideOnPause
                         Prefs[MEDIA_RPC_HIDE_ON_PAUSE] = hideOnPause
+                    }
+                }
+                item {
+                    PreferenceSwitch(
+                        title = stringResource(id = R.string.show_song_as_title),
+                        icon = Icons.Default.PlaylistAddCircle,
+                        isChecked = showSongAsTitle,
+                    ) {
+                        showSongAsTitle = !showSongAsTitle
+                        Prefs[MEDIA_RPC_SHOW_SONG_AS_TITLE] = showSongAsTitle
                     }
                 }
                 item {

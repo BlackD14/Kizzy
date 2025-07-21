@@ -42,6 +42,7 @@ private const val JAPANESE = 19
 private const val KOREAN = 20
 private const val ARABIC = 21
 private const val SPANISH = 22
+private const val HEBREW = 23
 
 val languages: Map<Int, String> =
     mapOf(
@@ -53,7 +54,7 @@ val languages: Map<Int, String> =
         Pair(PORTUGUESE, "pt"),
         Pair(INDONESIAN, "in"),
         Pair(SIMPLIFIED_CHINESE, "zh"),
-        Pair(TRADITIONAL_CHINESE, "zh-rTW"),
+        Pair(TRADITIONAL_CHINESE, "zh-TW"),
         Pair(BURMESE, "mm"),
         Pair(VIETNAMESE, "vi"),
         Pair(ITALIAN, "it"),
@@ -66,7 +67,8 @@ val languages: Map<Int, String> =
         Pair(JAPANESE, "ja"),
         Pair(KOREAN, "kr"),
         Pair(ARABIC, "ar"),
-        Pair(SPANISH, "es")
+        Pair(SPANISH, "es"),
+        Pair(HEBREW, "he")
     ).toList().sortedBy { (_, value) -> value }.toMap()
 
 fun getLanguageConfig(languageNumber: Int = Prefs[Prefs.LANGUAGE]): String {
@@ -92,7 +94,7 @@ fun getLanguageNumber(): Int {
 fun getLanguageDesc(language: Int = getLanguageNumber()): String {
     return stringResource(
         when (language) {
-            SIMPLIFIED_CHINESE -> R.string.locale_zh
+            SIMPLIFIED_CHINESE -> R.string.locale_zh_rcn
             TRADITIONAL_CHINESE -> R.string.locale_zh_rtw
             ENGLISH -> R.string.locale_en
             TURKISH -> R.string.locale_tr
@@ -114,6 +116,7 @@ fun getLanguageDesc(language: Int = getLanguageNumber()): String {
             KOREAN -> R.string.locale_kr
             ARABIC -> R.string.locale_ar
             SPANISH -> R.string.locale_es
+            HEBREW -> R.string.locale_he
             else -> R.string.follow_system
         }
     )
