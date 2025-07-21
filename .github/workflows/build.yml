@@ -36,16 +36,24 @@ jobs:
       - name: Assemble Release
         run: ./gradlew assembleRelease
 
-      - name: Upload APK
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: apk-release
           path: app/build/outputs/apk/release/**.apk
 
       - name: Prepare APK for release
-        run: mv app/build/outputs/apk/release/apk-release.apk Kizzy.apk
+        run: |
+          APK_PATH=$(find app/build/outputs/apk/release -name "*.apk" | head -n 1)
+          if [ -z "$APK_PATH" ]; then
+            echo "No APK found in app/build/outputs/apk/release/"
+            exit 1
+          fi
+          mv "$APK_PATH" Kizzy-v${{ github.run_number }}.apk
 
       - name: Create Release
-        uses: mikepenz/action-gh-release@v0.2.0-a03 #softprops/action-gh-release
+        uses: softprops/action-gh-release@v1 # Prefer softprops/action-gh-release for simplicity with files
         with:
-          files: Kizzy.apk
+          files: Kizzy-v${{ github.run_number }}.apk
+          tag_name: v${{ github.run_number }}
+          name: Release v${{ github.run_number }}
